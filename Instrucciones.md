@@ -9,14 +9,49 @@ Este es el primer ejercicio de Laravel 10
     `php artisan make:model Post -mf` 
         m: significa migraciones
         f: significa factory
-4. Configuracion de la migración. (campos).
+4. Configuración de la migración. (campos).
 ```php
+ public function up()
+{
+    Schema::create('posts', function (Blueprint $table) {
+        $table->id();
+        $table->string('title');
+        $table->string('slug')->unique();
+        $table->string('body');
+        $table->enum('type', ['PAGE', 'POST'])->default('POST');
+        $table->timestamps();
+    });
+}
 ```
 5. Creamos la estructura en el factory. para llenar los datos en la base de datos.
 ```php
+ public function definition()
+{
+    $title = fake()->sentence();
+    return [
+        'title' => $title,
+        'slug'  => strtolower(
+            str_replace(' ', '-', $title)
+        ),
+        'body'  => fake()->text(),
+        //'type'  => ['PAGE', 'POST'], NOTE: LO ASIGNAMOS DESDE EL SEEDER. 
+    ];
+}
 ```
 6. Creamos los Seeder. Es el molde para que podamos llenar o poblar a nuestras tablas utilizando el factory anterior.
 ```php
+public function run()
+{
+    // \App\Models\User::factory(10)->create();
+
+    \App\Models\Post::factory(36)->create();
+    //Pages
+    \App\Models\Post::factory()->create(['title' => 'Example',  'slug' => 'example',  'type' => 'PAGE']);
+    \App\Models\Post::factory()->create(['title' => 'Features', 'slug' => 'features', 'type' => 'PAGE']);
+    \App\Models\Post::factory()->create(['title' => 'Overview', 'slug' => 'overview', 'type' => 'PAGE']);
+    \App\Models\Post::factory()->create(['title' => 'About',    'slug' => 'about',    'type' => 'PAGE']);
+
+}
 ```
 7. Ejecutamos las migraciones y que se ejecuten los seeder.
 ```bash
@@ -49,7 +84,7 @@ php artisan make:controller PageController
         return view('blog', compact('page', 'post'));
     }
 ```
-3. Definimos la rutas para el controlador y los dos metodos en el archivo de Rutas.
+3. Definimos la rutas para el controlador y los dos métodos en el archivo de Rutas.
 ```php
 Route::get('/',            [PageController::class, 'blog'])->name('blog');
 Route::get('/{post:slug}', [PageController::class, 'post'])->name('post');
