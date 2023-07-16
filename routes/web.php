@@ -6,5 +6,5 @@ use App\Http\Controllers\PageController;
 
 
 Route::get('/',            [PageController::class, 'blog'])->name('blog');
-#Route::get('/{post:slug}', [PageController::class, 'post'])->name('post');
-Route::get('/post/{slug}', [PageController::class, 'post'])->name('post');
+Route::get('/{post:slug}', [PageController::class, 'post'])->name('post');
+
